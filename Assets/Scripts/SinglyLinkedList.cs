@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SinglyLinkedList : IEnumerable, IEnumerator
+public class SinglyLinkedList
 {
     public Tile head;
     Tile last;
@@ -39,21 +39,23 @@ public class SinglyLinkedList : IEnumerable, IEnumerator
     public Tile GetLastNode()
     {
         Tile temp = head; // hämta en tillfällig ref till huvudet för att räkna till sista platsen i listan
-        while (temp.next != null)
+        while (temp.next != null) // när temp.next är null är temp den sista noden i listan
         {
             temp = temp.next;
         }
         return temp;
     }
 
-    public Tile RemoveLast()
+
+    public Tile RemoveLast() // Kallas från Snake scriptet
     {
-        return RemoveLast(head, Count);
+        return RemoveLast(head, Count); // Kallar vår interna RemoveLast
     }
+
 
     Tile RemoveLast(Tile node, int nodesLeft)
     {
-        if (nodesLeft == 1)
+        if (nodesLeft == 1) // Kollar hur många noder vi har kvar, om detta stämmar har vi hittat den näst sista noden och gör dess nästa nod till null. På så sätt kapas den sista noden ur vår lista
         {
             Tile temp = last;
             last = node;
@@ -61,9 +63,8 @@ public class SinglyLinkedList : IEnumerable, IEnumerator
             Count--;
             return temp;
         }
-        else return RemoveLast(node.next, nodesLeft - 1);
+        else return RemoveLast(node.next, nodesLeft - 1); // Minksa antalet noder kvar, och kalla sig själv igen. Detta upprepas tills vi uppfyllt vårt IF statement
     }
-    //Todo: Get all nodes positions and make them impassable
 
 
     public void InsertAfter(Tile prevNode, GameObject new_gameObjectData)
@@ -78,58 +79,4 @@ public class SinglyLinkedList : IEnumerable, IEnumerator
         Count++;
     }
 
-    public GameObject this[int index] // Overloading array
-    {
-        get => GetValue(index); // Expression body. Used instead of {} && return
-        set => SetValue(index, value);
-    }
-
-    public GameObject GetValue(int index)
-    {
-        if (index < 0 || index >= Count || head == null)
-        {  Debug.Log("Index out of range"); } 
-        Tile currenNode = head;
-        for (int i = 0; i <= index && currenNode != null; i++)
-        {
-            if (index == i)
-            {
-                return currenNode.gameObjectdata;
-            }
-            currenNode = currenNode.next;
-        }
-        return null;
-    }
-    public void SetValue(int index, GameObject value)
-    {
-        if (index < 0 || index >= Count || head == null)
-        { Debug.Log("Index out of range"); } 
-        Tile currenNode = head;
-        for (int i = 0; i <= index && currenNode != null; i++)
-        {
-            if (index == i)
-            {
-                currenNode.gameObjectdata = value;
-                return;
-            }
-            currenNode = currenNode.next;
-        }
-    }
-
-    public object Current => GetValue(iteratorPos);
-
-    public bool MoveNext()
-    {
-        iteratorPos++;
-        return iteratorPos < Count;
-    }
-
-    public void Reset()
-    {
-        iteratorPos = 0;
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        return this;
-    }
 }

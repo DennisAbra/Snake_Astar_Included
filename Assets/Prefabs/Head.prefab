@@ -150,7 +150,7 @@ MonoBehaviour:
   bottomBorder: {fileID: 0}
   leftBorder: {fileID: 0}
   rightBorder: {fileID: 0}
-  timeToMove: 0
+  timeToMove: 0.02
   usePathFinding: 1
   isPlaying: 0
   snakeDirection: 1

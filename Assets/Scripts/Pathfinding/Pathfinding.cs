@@ -43,10 +43,10 @@ public class Pathfinding : MonoBehaviour
             {
                 if(!neighbour.walkable || closedSet.Contains(neighbour))
                 {
-                    continue;
+                    continue; 
                 }
 
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour); // Räknar ut ett nytt F värde för grannen
                 if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                 {
                     neighbour.gCost = newMovementCostToNeighbour;
@@ -81,8 +81,9 @@ public class Pathfinding : MonoBehaviour
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        //if (dstX > dstY) return 14 * dstY + 10 * (dstX - dstY);
-        //return 14 * dstX + 10 * (dstY - dstX);
-        return dstY + dstX; 
+        if (dstX > dstY) return 14 * dstY + 10 * (dstX - dstY);
+        return 14 * dstX + 10 * (dstY - dstX);
+        //return dstY + dstX;
+        // Byt ut uträkningen mot sista utkommenterade linjen för att få längre livslängd.
     }
 }

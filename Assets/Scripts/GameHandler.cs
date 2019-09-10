@@ -8,6 +8,7 @@ public class GameHandler : MonoBehaviour
 {
     [SerializeField] Canvas mainMenu;
     [SerializeField] Canvas loseMenu;
+    [SerializeField] Text scoreText;
 
     Snake snake;
     private void Awake()
@@ -48,5 +49,11 @@ public class GameHandler : MonoBehaviour
     {
         loseMenu.enabled = false;
         SceneManager.LoadScene(0);
+    }
+
+    public void UpdateScoreText()
+    {
+        int score = snake.singlyList.Count - 1;
+        scoreText.text = score.ToString();
     }
 }
