@@ -31,6 +31,9 @@ public class Snake : MonoBehaviour
     public bool usePathFinding;
     public bool isPlaying = false;
     bool foundPath;
+    [Header("Only set above 1 for pathfinding")]
+    [Range(1, 10)]
+    [SerializeField] float timeScaleMultiplier;
 
     public enum eDirection { up, right, down, left };
     public eDirection snakeDirection;
@@ -42,7 +45,6 @@ public class Snake : MonoBehaviour
         singlyList.InsertFrontOfLine(gameObject);
         grid = FindObjectOfType<Grid>();
         gameHandler = FindObjectOfType<GameHandler>();
-
         go = Instantiate(foodPrefab, new Vector2(5, 5), Quaternion.identity);
         MoveFood();
     }
@@ -59,6 +61,7 @@ public class Snake : MonoBehaviour
 
     private void PathfindingPlay()
     {
+        Time.timeScale = timeScaleMultiplier;
         if (tick > timeToMove && usePathFinding)
         {
             foundPath = pathFind.FindPath(transform.position, go.transform.position);
@@ -84,7 +87,7 @@ public class Snake : MonoBehaviour
             desiredPos = new Vector2(grid.path[0].gridX, grid.path[0].gridY);
             CheckPathDirection();
          }
-         else
+         else // TODO: lägg in logik för att följa svansen
          {
             TryToSurvive();
          }
@@ -106,11 +109,13 @@ public class Snake : MonoBehaviour
             }
             else if(node.walkable && node.gridX < transform.position.x)
             {
+
                 direction = Vector2.left;
             }
             else if(node.walkable && node.gridY > transform.position.y)
             {
                 direction = Vector2.up;
+
             }
             else if(node.walkable && node.gridY < transform.position.y)
             {
@@ -233,7 +238,7 @@ public class Snake : MonoBehaviour
             xPos = (int)Random.Range(leftBorder.position.x - 1, rightBorder.position.x + 1); // The magic number is to prevent food to spawn inside my borders
             yPos = (int)Random.Range(bottomBorder.position.y + 1, topBorder.position.y - 1); // The magic number is to prevent food to spawn inside my borders
         }
-        while (!grid.grid[(int)xPos, (int)yPos].walkable);
+        while (!grid.grid[(int)xPos, (int)yPos].walkable && xPos != transform.position.x && yPos != transform.position.y);
         
         foodNewPos = new Vector2(xPos, yPos);
         go.transform.position = foodNewPos;

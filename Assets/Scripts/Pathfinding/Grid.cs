@@ -35,7 +35,7 @@ public class Grid : MonoBehaviour
         {
             for (int y = -1; y <= 1; y++)
             {
-                if (x == 0 && y == 0 || x == 1 && y == 1 || x == -1 && y == 1 || x == 1 && y == -1 || x == -1 && y == -1) continue;
+                if (x == 0 && y == 0 || x == y || x == -y || -x == y || -x == -y) continue;
 
                 int checkX = node.gridX + x;
                 int checkY = node.gridY + y;
