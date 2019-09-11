@@ -11,7 +11,7 @@ public class Pathfinding : MonoBehaviour
         grid = GetComponent<Grid>();
     }
 
-    public void FindPath(Vector3 startPos, Vector3 targetPos)
+    public bool FindPath(Vector3 startPos, Vector3 targetPos)
     {
         Node startNode = grid.grid[(int)startPos.x, (int)startPos.y];
         Node targetNode = grid.grid[(int)targetPos.x, (int)targetPos.y];
@@ -36,7 +36,7 @@ public class Pathfinding : MonoBehaviour
             if (currentNode == targetNode)
             {
                 RetracePath(startNode, targetNode);
-                return;
+                return true;
             }
 
             foreach (Node neighbour in grid.GetNeighbours(currentNode))
@@ -46,7 +46,7 @@ public class Pathfinding : MonoBehaviour
                     continue; 
                 }
 
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour); // Räknar ut ett nytt F värde för grannen
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour); 
                 if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
                 {
                     neighbour.gCost = newMovementCostToNeighbour;
@@ -60,6 +60,8 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
+        Debug.Log("Didn't find a path");
+        return false;
     }
 
     void RetracePath(Node startNode, Node targetNode)
@@ -81,9 +83,7 @@ public class Pathfinding : MonoBehaviour
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        if (dstX > dstY) return 14 * dstY + 10 * (dstX - dstY);
-        return 14 * dstX + 10 * (dstY - dstX);
-        //return dstY + dstX;
-        // Byt ut uträkningen mot sista utkommenterade linjen för att få längre livslängd.
+        if (dstX > dstY) return 50 * dstY + 10 * (dstX - dstY); // Change the first number to lower, if you want to allow diagonal(ish) movement
+        return 50 * dstX + 10 * (dstY - dstX);
     }
 }

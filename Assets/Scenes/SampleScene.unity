@@ -1830,6 +1830,10 @@ PrefabInstance:
       propertyPath: rightBorder
       value: 
       objectReference: {fileID: 5544456224757586476}
+    - target: {fileID: 2124577325, guid: 554931cc943e00f4898682e75f3192c2, type: 3}
+      propertyPath: timeToMove
+      value: 0.02
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 554931cc943e00f4898682e75f3192c2, type: 3}
 --- !u!1001 &728544270056954916

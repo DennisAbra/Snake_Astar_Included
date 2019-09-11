@@ -41,7 +41,7 @@ public class GameHandler : MonoBehaviour
         }
         else
         {
-            loseMenu.GetComponentInChildren<Text>().text = "Nice try, want to try again?";
+            loseMenu.GetComponentInChildren<Text>().text = "Nice try, want to go again?";
         }
     }
 

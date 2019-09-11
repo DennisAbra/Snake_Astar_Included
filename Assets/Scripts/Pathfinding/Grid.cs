@@ -50,7 +50,7 @@ public class Grid : MonoBehaviour
 
     public List<Node> path;
 
-
+    // Debugging purpose
     private void OnDrawGizmos()
     {
         if(grid != null)

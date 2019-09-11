@@ -30,6 +30,7 @@ public class Snake : MonoBehaviour
     GameObject go;
     public bool usePathFinding;
     public bool isPlaying = false;
+    bool foundPath;
 
     public enum eDirection { up, right, down, left };
     public eDirection snakeDirection;
@@ -42,25 +43,35 @@ public class Snake : MonoBehaviour
         grid = FindObjectOfType<Grid>();
         gameHandler = FindObjectOfType<GameHandler>();
 
-        go = Instantiate(foodPrefab, new Vector2(5, 5), Quaternion.identity); // Spawnar en matbit
-        MoveFood(); // Flyttar den till ett random ställe inom vårt grid
+        go = Instantiate(foodPrefab, new Vector2(5, 5), Quaternion.identity);
+        MoveFood();
     }
 
     private void FixedUpdate()
     {
         if(isPlaying)
         {
-            CheckMovementDirectionWithPlayerInput(); // Self explanatory
-            if (tick > timeToMove && !usePathFinding)
-            {
-                Move();
-            }
-            if (tick > timeToMove && usePathFinding)
-            {
-                pathFind.FindPath(transform.position, go.transform.position); // Deklarerar vårt mål med pathfindingen, samt vår egna position
-                MoveWithPathFinding();
-            }
+            NormalPlay();
+            PathfindingPlay();
             tick += Time.fixedDeltaTime;
+        }
+    }
+
+    private void PathfindingPlay()
+    {
+        if (tick > timeToMove && usePathFinding)
+        {
+            foundPath = pathFind.FindPath(transform.position, go.transform.position);
+            MoveWithPathFinding();
+        }
+    }
+
+    private void NormalPlay()
+    {
+        CheckMovementDirectionWithPlayerInput(); // Self explanatory
+        if (tick > timeToMove && !usePathFinding)
+        {
+            Move();
         }
     }
 
@@ -68,40 +79,54 @@ public class Snake : MonoBehaviour
     private void MoveWithPathFinding()
     {
          oldPos = transform.position;
-         desiredPos = new Vector2(grid.path[0].gridX, grid.path[0].gridY);
+         if(foundPath)
+         {
+            desiredPos = new Vector2(grid.path[0].gridX, grid.path[0].gridY);
+            CheckPathDirection();
+         }
+         else
+         {
+            TryToSurvive();
+         }
 
-        if (ate)
-        {
-            GameObject go = Instantiate(tailPrefab, oldPos, Quaternion.identity, transform.parent);
+        HandleSnakeBodyMovement();
 
-            if (singlyList.Count > 1) // Har vi mer än huvudet i vår lista? Om Ja så sätter vi in vår nya nod efter huvudet och gör den grid noden till unwalkable
-            {
-                singlyList.InsertAfter(singlyList.head.next, go);
-                grid.grid[(int)go.transform.position.x, (int)go.transform.position.y].walkable = false;
-            }
-            else // Om nej sätter vi den sist i listan - den blir sedan unwalkable efter vi rört oss
-            {
-                singlyList.InsertLast(go);
-            }
-            gameHandler.UpdateScoreText();
-            ate = false;
-        }
-        else if (singlyList.Count > 1)
-        {
-            var temp = singlyList.GetLastNode();
-
-            if (temp != null)
-            {
-                grid.grid[(int)temp.gameObjectdata.transform.position.x, (int)temp.gameObjectdata.transform.position.y].walkable = true;
-                temp.gameObjectdata.transform.position = oldPos;
-                singlyList.RemoveLast();
-                singlyList.InsertAfter(singlyList.head.next, temp.gameObjectdata);
-                grid.grid[(int)temp.gameObjectdata.transform.position.x, (int)temp.gameObjectdata.transform.position.y].walkable = false;
-            }
-        }
-        CheckPathDirection();
         transform.Translate(direction);
         tick = 0;
+    }
+
+    private void TryToSurvive()
+    {
+        Node currentNode = grid.grid[(int)transform.position.x, (int)transform.position.y];
+        foreach (Node node in grid.GetNeighbours(currentNode))
+        {
+            if(node.walkable && node.gridX > transform.position.x)
+            {
+                direction = Vector2.right;
+            }
+            else if(node.walkable && node.gridX < transform.position.x)
+            {
+                direction = Vector2.left;
+            }
+            else if(node.walkable && node.gridY > transform.position.y)
+            {
+                direction = Vector2.up;
+            }
+            else if(node.walkable && node.gridY < transform.position.y)
+            {
+                direction = Vector2.down;
+            }
+        }
+    }
+
+    private void SetGridWalkableTrue(GameObject temp)
+    {
+        grid.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].walkable = true;
+    }
+
+    private void SetGridWalkableFalse(GameObject go)
+    {
+        grid.grid[(int)go.transform.position.x, (int)go.transform.position.y].walkable = false;
     }
 
     private void CheckPathDirection()
@@ -170,8 +195,9 @@ public class Snake : MonoBehaviour
             if (singlyList.Count > 1)
             {
                 singlyList.InsertAfter(singlyList.head.next, go);
+                SetGridWalkableFalse(go);
             }
-            else
+            else 
             {
                 singlyList.InsertLast(go);
             }
@@ -181,11 +207,14 @@ public class Snake : MonoBehaviour
         else if (singlyList.Count > 1)
         {
             var temp = singlyList.GetLastNode();
+
             if (temp != null)
             {
+                SetGridWalkableTrue(temp.gameObjectdata);
                 temp.gameObjectdata.transform.position = oldPos;
                 singlyList.RemoveLast();
                 singlyList.InsertAfter(singlyList.head.next, temp.gameObjectdata);
+                SetGridWalkableFalse(temp.gameObjectdata);
             }
         }
     }
@@ -215,7 +244,6 @@ public class Snake : MonoBehaviour
         if(collision.name.StartsWith("Food"))
         {
             ate = true;
-            //Destroy(collision.gameObject);
             MoveFood();
         }
         else
