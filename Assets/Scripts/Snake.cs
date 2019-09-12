@@ -28,15 +28,15 @@ public class Snake : MonoBehaviour
 
     bool ate = false;
     GameObject go;
-    public bool usePathFinding;
-    public bool isPlaying = false;
+    [HideInInspector]public bool usePathFinding;
+    [HideInInspector] public bool isPlaying = false;
     bool foundPath;
     [Header("Only set above 1 for pathfinding")]
     [Range(1, 10)]
     [SerializeField] float timeScaleMultiplier;
 
-    public enum eDirection { up, right, down, left };
-    public eDirection snakeDirection;
+     enum eDirection { up, right, down, left };
+     eDirection snakeDirection;
 
     void Start()
     {

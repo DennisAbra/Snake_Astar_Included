@@ -153,4 +153,5 @@ MonoBehaviour:
   timeToMove: 0.02
   usePathFinding: 1
   isPlaying: 0
+  timeScaleMultiplier: 1
   snakeDirection: 1
