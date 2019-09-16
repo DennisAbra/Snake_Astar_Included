@@ -19,7 +19,7 @@ public class Snake : MonoBehaviour
     [SerializeField] float timeToMove = .1f;
     float tick = 0;
 
-    Vector2 direction = Vector2.right;
+    [SerializeField] Vector2 direction = Vector2.right;
     Vector2 oldPos;
     public SinglyLinkedList singlyList;
     Pathfinding pathFind;
@@ -78,6 +78,7 @@ public class Snake : MonoBehaviour
         }
     }
 
+    
     Vector2 desiredPos;
     private void MoveWithPathFinding()
     {
@@ -86,16 +87,34 @@ public class Snake : MonoBehaviour
          {
             desiredPos = new Vector2(grid.path[0].gridX, grid.path[0].gridY);
             CheckPathDirection();
-         }
-         else // TODO: lägg in logik för att följa svansen
-         {
-            TryToSurvive();
-         }
+        }
+
+       else if(pathFind.searchingForTail && !foundPath)
+        {
+            MoveWithPanicPath();
+        }
 
         HandleSnakeBodyMovement();
 
         transform.Translate(direction);
         tick = 0;
+    }
+
+    private void MoveWithPanicPath()
+    {
+        Debug.Log("Path not found");
+        Tile temp = singlyList.last;
+        if (temp != null)
+        {
+            grid.grid[(int)temp.gameObjectdata.transform.position.x, (int)temp.gameObjectdata.transform.position.y].walkable = true;
+            bool foundTail = pathFind.FindPath(transform.position, temp.gameObjectdata.transform.position);
+            if (foundTail)
+            {
+                desiredPos = new Vector2(grid.path[0].gridX, grid.path[0].gridY);
+                CheckPathDirection();
+            }
+            else TryToSurvive();
+        }
     }
 
     private void TryToSurvive()
@@ -124,14 +143,14 @@ public class Snake : MonoBehaviour
         }
     }
 
-    private void SetGridWalkableTrue(GameObject temp)
+    private void SetGridWalkableTrue(Transform temp)
     {
         grid.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].walkable = true;
     }
 
-    private void SetGridWalkableFalse(GameObject go)
+    private void SetGridWalkableFalse(Transform temp)
     {
-        grid.grid[(int)go.transform.position.x, (int)go.transform.position.y].walkable = false;
+        grid.grid[(int)temp.transform.position.x, (int)temp.transform.position.y].walkable = false;
     }
 
     private void CheckPathDirection()
@@ -139,7 +158,11 @@ public class Snake : MonoBehaviour
         if(desiredPos.x > oldPos.x)
         {
             direction = Vector2.right;
-        } 
+        }
+        else if (desiredPos.y < oldPos.y)
+        {
+            direction = Vector2.down;
+        }
         else if(desiredPos.x < oldPos.x)
         {
             direction = Vector2.left;
@@ -148,10 +171,7 @@ public class Snake : MonoBehaviour
         {
             direction = Vector2.up;
         }
-        else if(desiredPos.y < oldPos.y)
-        {
-            direction = Vector2.down;
-        }
+
     }
 
     private void CheckMovementDirectionWithPlayerInput()
@@ -195,16 +215,16 @@ public class Snake : MonoBehaviour
     {
         if (ate)
         {
-            GameObject go = Instantiate(tailPrefab, oldPos, Quaternion.identity, transform.parent);
+            GameObject tail = Instantiate(tailPrefab, oldPos, Quaternion.identity, transform.parent);
 
             if (singlyList.Count > 1)
             {
-                singlyList.InsertAfter(singlyList.head.next, go);
-                SetGridWalkableFalse(go);
+                singlyList.InsertAfter(singlyList.head.next, tail);
+                SetGridWalkableFalse(tail.transform);
             }
             else 
             {
-                singlyList.InsertLast(go);
+                singlyList.InsertLast(tail);
             }
             gameHandler.UpdateScoreText();
             ate = false;
@@ -215,16 +235,15 @@ public class Snake : MonoBehaviour
 
             if (temp != null)
             {
-                SetGridWalkableTrue(temp.gameObjectdata);
+                SetGridWalkableTrue(temp.gameObjectdata.transform);
                 temp.gameObjectdata.transform.position = oldPos;
                 singlyList.RemoveLast();
                 singlyList.InsertAfter(singlyList.head.next, temp.gameObjectdata);
-                SetGridWalkableFalse(temp.gameObjectdata);
+                SetGridWalkableFalse(temp.gameObjectdata.transform);
             }
         }
     }
 
-    Vector2 foodNewPos;
 
     public void MoveFood()
     {
@@ -232,16 +251,19 @@ public class Snake : MonoBehaviour
         // Went with only spawning it once, and then moving it everytime it gets eaten instead as the pathfinder wont calculate a path until it spawned.
         // Made everything so much more smooth
         // Values are converted to int as the snake will only move along whole numbers
+        Vector2 foodNewPos;
         float xPos, yPos;
         do
         {
-            xPos = (int)Random.Range(leftBorder.position.x - 1, rightBorder.position.x + 1); // The magic number is to prevent food to spawn inside my borders
+            xPos = (int)Random.Range(leftBorder.position.x + 1, rightBorder.position.x - 1); // The magic number is to prevent food to spawn inside my borders
             yPos = (int)Random.Range(bottomBorder.position.y + 1, topBorder.position.y - 1); // The magic number is to prevent food to spawn inside my borders
+            // xPos = (int)Random.Range(0,70); // The magic number is to prevent food to spawn inside my borders
+            // yPos = (int)Random.Range(0,50);
         }
-        while (!grid.grid[(int)xPos, (int)yPos].walkable && xPos != transform.position.x && yPos != transform.position.y);
+        while (!grid.grid[(int)xPos, (int)yPos].walkable || xPos == transform.position.x && yPos == transform.position.y);
+            foodNewPos = new Vector2(xPos, yPos);
+            go.transform.position = foodNewPos;
         
-        foodNewPos = new Vector2(xPos, yPos);
-        go.transform.position = foodNewPos;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

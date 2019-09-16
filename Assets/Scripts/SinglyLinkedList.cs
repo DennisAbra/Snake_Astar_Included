@@ -5,7 +5,7 @@ using UnityEngine;
 public class SinglyLinkedList
 {
     public Tile head;
-    Tile last;
+    public Tile last;
 
 
     public int Count
@@ -42,6 +42,7 @@ public class SinglyLinkedList
         {
             temp = temp.next;
         }
+        last = temp;
         return temp;
     }
 

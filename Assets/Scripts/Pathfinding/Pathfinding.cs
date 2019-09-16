@@ -5,6 +5,7 @@ using UnityEngine;
 public class Pathfinding : MonoBehaviour
 {
     Grid grid;
+    public bool searchingForTail;
 
     private void Start()
     {
@@ -35,6 +36,7 @@ public class Pathfinding : MonoBehaviour
 
             if (currentNode == targetNode)
             {
+                searchingForTail = false;
                 RetracePath(startNode, targetNode);
                 return true;
             }
@@ -60,7 +62,8 @@ public class Pathfinding : MonoBehaviour
                 }
             }
         }
-        Debug.Log("Didn't find a path");
+        // Debug.Log("Didn't find a path");
+        searchingForTail = true;
         return false;
     }
 
@@ -83,7 +86,7 @@ public class Pathfinding : MonoBehaviour
         int dstX = Mathf.Abs(nodeA.gridX - nodeB.gridX);
         int dstY = Mathf.Abs(nodeA.gridY - nodeB.gridY);
 
-        if (dstX > dstY) return 50 * dstY + 10 * (dstX - dstY); // Change the first number to lower, if you want to allow diagonal(ish) movement
+        if (dstX > dstY) return 50 * dstY + 10 * (dstX - dstY); // Change the first number to lower, if you want to allow diagonal(ish) movement | ish becuase the snake can't actually move diagonally, but changing that number will make it believe it can
         return 50 * dstX + 10 * (dstY - dstX);
     }
 }
