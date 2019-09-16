@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6784413812464451836}
   - component: {fileID: 6784413812464451587}
   - component: {fileID: 6784413812464451585}
-  - component: {fileID: 6784413812464451586}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -84,25 +83,3 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6784413812464451584}
   m_Enabled: 1
---- !u!114 &6784413812464451586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6784413812464451584}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1536d4c4a10772a4abe620bc1b46f353, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  foodPrefab: {fileID: 2796700872933321240, guid: 5571621c305d3ea4eba4f6aec07c4403,
-    type: 3}
-  topBorder: {fileID: 728544269494798752, guid: db21bc7bcaa8a17408ca5770f11f483d,
-    type: 3}
-  bottomBorder: {fileID: 2371710980985080501, guid: 040a044226cfb4445b98754257e797ce,
-    type: 3}
-  leftBorder: {fileID: 6896861217612930898, guid: 5aacbf685dd4b4b4f9c0b7a0e2235b0c,
-    type: 3}
-  rightBorder: {fileID: 5544456226144560780, guid: 693f7efb899452d4086ad6adefc1d35d,
-    type: 3}

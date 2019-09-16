@@ -182,19 +182,19 @@ public class Snake : MonoBehaviour
             snakeDirection = eDirection.left;
 
         }
-        else if (Input.GetKeyDown(KeyCode.D) && snakeDirection != eDirection.left || Input.GetKeyDown(KeyCode.RightArrow) && snakeDirection != eDirection.right)
+        else if (Input.GetKeyDown(KeyCode.D) && snakeDirection != eDirection.left || Input.GetKeyDown(KeyCode.RightArrow) && snakeDirection != eDirection.left)
         {
             direction = Vector2.right;
             snakeDirection = eDirection.right;
 
         }
-        else if (Input.GetKeyDown(KeyCode.W) && snakeDirection != eDirection.down || Input.GetKeyDown(KeyCode.UpArrow) && snakeDirection != eDirection.right)
+        else if (Input.GetKeyDown(KeyCode.W) && snakeDirection != eDirection.down || Input.GetKeyDown(KeyCode.UpArrow) && snakeDirection != eDirection.down)
         {
             direction = Vector2.up;
             snakeDirection = eDirection.up;
 
         }
-        else if (Input.GetKeyDown(KeyCode.S) && snakeDirection != eDirection.up || Input.GetKeyDown(KeyCode.DownArrow) && snakeDirection != eDirection.right)
+        else if (Input.GetKeyDown(KeyCode.S) && snakeDirection != eDirection.up || Input.GetKeyDown(KeyCode.DownArrow) && snakeDirection != eDirection.up)
         {
             direction = Vector2.down;
             snakeDirection = eDirection.down;
